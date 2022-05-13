@@ -16,39 +16,12 @@ char **split_string(char *);
 
 int parse_int(char *);
 
-void merge_sort_array(int *arr, int l, int r);
-void merge_array(int *arr, int l, int m, int r);
-
 /*
- * Complete the 'pickingNumbers' function below.
+ * Complete the 'minimumAbsoluteDifference' function below.
  *
  * The function is expected to return an INTEGER.
- * The function accepts INTEGER_ARRAY a as parameter.
+ * The function accepts INTEGER_ARRAY arr as parameter.
  */
-
-int pickingNumbers(int a_count, int *a)
-{
-  int subarray_n = 0;
-  int x = 0;
-  int y = x + 1;
-
-  merge_sort_array(a, 0, a_count - 1);
-
-  for (int i = 0; i < a_count - 1; i++)
-  {
-    if (a[y] - a[x] > 1)
-    {
-      if (y - x > subarray_n)
-      {
-        subarray_n = y - x;
-      }
-      x = y;
-    }
-    y++;
-  }
-
-  return (y == a_count && y - x > subarray_n) ? (y - x) : subarray_n;
-}
 
 // merge the array
 void merge_array(int *arr, int l, int m, int r)
@@ -108,24 +81,50 @@ void merge_sort_array(int *arr, int l, int r)
   }
 }
 
+int minimumAbsoluteDifference(int arr_count, int *arr)
+{
+  // sorting the array first
+  // using merge sort
+  merge_sort_array(arr, 0, arr_count - 1);
+
+  int min_diff = abs(arr[0] - arr[1]);
+
+  for (int i = 1; i < arr_count - 1; i++)
+  {
+    int diff = abs(arr[i] - arr[i + 1]);
+
+    if (diff == 0)
+    { // here the global minimum absolute value is achieved
+      min_diff = diff;
+      break;
+    }
+    if (diff < min_diff)
+    {
+      min_diff = diff;
+    }
+  }
+
+  return min_diff;
+}
+
 int main()
 {
   FILE *fptr = fopen(getenv("OUTPUT_PATH"), "w");
 
   int n = parse_int(ltrim(rtrim(readline())));
 
-  char **a_temp = split_string(rtrim(readline()));
+  char **arr_temp = split_string(rtrim(readline()));
 
-  int *a = malloc(n * sizeof(int));
+  int *arr = malloc(n * sizeof(int));
 
   for (int i = 0; i < n; i++)
   {
-    int a_item = parse_int(*(a_temp + i));
+    int arr_item = parse_int(*(arr_temp + i));
 
-    *(a + i) = a_item;
+    *(arr + i) = arr_item;
   }
 
-  int result = pickingNumbers(n, a);
+  int result = minimumAbsoluteDifference(n, arr);
 
   fprintf(fptr, "%d\n", result);
 

@@ -16,118 +16,90 @@ char **split_string(char *);
 
 int parse_int(char *);
 
-void merge_sort_array(int *arr, int l, int r);
-void merge_array(int *arr, int l, int m, int r);
-
 /*
- * Complete the 'pickingNumbers' function below.
+ * Complete the 'rotateLeft' function below.
  *
- * The function is expected to return an INTEGER.
- * The function accepts INTEGER_ARRAY a as parameter.
+ * The function is expected to return an INTEGER_ARRAY.
+ * The function accepts following parameters:
+ *  1. INTEGER d
+ *  2. INTEGER_ARRAY arr
  */
 
-int pickingNumbers(int a_count, int *a)
+/*
+ * To return the integer array from the function, you should:
+ *     - Store the size of the array to be returned in the result_count variable
+ *     - Allocate the array statically or dynamically
+ *
+ * For example,
+ * int* return_integer_array_using_static_allocation(int* result_count) {
+ *     *result_count = 5;
+ *
+ *     static int a[5] = {1, 2, 3, 4, 5};
+ *
+ *     return a;
+ * }
+ *
+ * int* return_integer_array_using_dynamic_allocation(int* result_count) {
+ *     *result_count = 5;
+ *
+ *     int *a = malloc(5 * sizeof(int));
+ *
+ *     for (int i = 0; i < 5; i++) {
+ *         *(a + i) = i + 1;
+ *     }
+ *
+ *     return a;
+ * }
+ *
+ */
+int *rotateLeft(int d, int arr_count, int *arr, int *result_count)
 {
-  int subarray_n = 0;
-  int x = 0;
-  int y = x + 1;
+  int *result_arr = (int *)malloc(sizeof(int) * arr_count);
+  *result_count = arr_count;
 
-  merge_sort_array(a, 0, a_count - 1);
-
-  for (int i = 0; i < a_count - 1; i++)
+  for (int i = 0; i < arr_count; i++)
   {
-    if (a[y] - a[x] > 1)
-    {
-      if (y - x > subarray_n)
-      {
-        subarray_n = y - x;
-      }
-      x = y;
-    }
-    y++;
+    result_arr[i] = arr[(i + d) % arr_count];
   }
 
-  return (y == a_count && y - x > subarray_n) ? (y - x) : subarray_n;
-}
-
-// merge the array
-void merge_array(int *arr, int l, int m, int r)
-{
-  int i, j, k;
-  int n1 = m - l + 1;
-  int n2 = r - m;
-
-  int L[n1], R[n2];
-
-  for (i = 0; i < n1; i++)
-    L[i] = arr[l + i];
-  for (j = 0; j < n2; j++)
-    R[j] = arr[m + 1 + j];
-
-  i = 0;
-  j = 0;
-  k = l;
-  while (i < n1 && j < n2)
-  {
-    if (L[i] <= R[j])
-    {
-      arr[k] = L[i];
-      i++;
-    }
-    else
-    {
-      arr[k] = R[j];
-      j++;
-    }
-    k++;
-  }
-
-  while (i < n1)
-  {
-    arr[k] = L[i];
-    i++;
-    k++;
-  }
-  while (j < n2)
-  {
-    arr[k] = R[j];
-    j++;
-    k++;
-  }
-}
-
-// mergesort algorithm
-void merge_sort_array(int *arr, int l, int r)
-{
-  if (l < r)
-  {
-    int m = l + (r - l) / 2;
-    merge_sort_array(arr, l, m);     // divide
-    merge_sort_array(arr, m + 1, r); // divide
-    merge_array(arr, l, m, r);       // conquer
-  }
+  return result_arr;
 }
 
 int main()
 {
   FILE *fptr = fopen(getenv("OUTPUT_PATH"), "w");
 
-  int n = parse_int(ltrim(rtrim(readline())));
+  char **first_multiple_input = split_string(rtrim(readline()));
 
-  char **a_temp = split_string(rtrim(readline()));
+  int n = parse_int(*(first_multiple_input + 0));
 
-  int *a = malloc(n * sizeof(int));
+  int d = parse_int(*(first_multiple_input + 1));
+
+  char **arr_temp = split_string(rtrim(readline()));
+
+  int *arr = malloc(n * sizeof(int));
 
   for (int i = 0; i < n; i++)
   {
-    int a_item = parse_int(*(a_temp + i));
+    int arr_item = parse_int(*(arr_temp + i));
 
-    *(a + i) = a_item;
+    *(arr + i) = arr_item;
   }
 
-  int result = pickingNumbers(n, a);
+  int result_count;
+  int *result = rotateLeft(d, n, arr, &result_count);
 
-  fprintf(fptr, "%d\n", result);
+  for (int i = 0; i < result_count; i++)
+  {
+    fprintf(fptr, "%d", *(result + i));
+
+    if (i != result_count - 1)
+    {
+      fprintf(fptr, " ");
+    }
+  }
+
+  fprintf(fptr, "\n");
 
   fclose(fptr);
 

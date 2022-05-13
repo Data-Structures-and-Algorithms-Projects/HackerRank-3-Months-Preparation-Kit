@@ -16,118 +16,40 @@ char **split_string(char *);
 
 int parse_int(char *);
 
-void merge_sort_array(int *arr, int l, int r);
-void merge_array(int *arr, int l, int m, int r);
-
 /*
- * Complete the 'pickingNumbers' function below.
+ * Complete the 'towerBreakers' function below.
  *
  * The function is expected to return an INTEGER.
- * The function accepts INTEGER_ARRAY a as parameter.
+ * The function accepts following parameters:
+ *  1. INTEGER n
+ *  2. INTEGER m
  */
 
-int pickingNumbers(int a_count, int *a)
+int towerBreakers(int n, int m)
 {
-  int subarray_n = 0;
-  int x = 0;
-  int y = x + 1;
-
-  merge_sort_array(a, 0, a_count - 1);
-
-  for (int i = 0; i < a_count - 1; i++)
-  {
-    if (a[y] - a[x] > 1)
-    {
-      if (y - x > subarray_n)
-      {
-        subarray_n = y - x;
-      }
-      x = y;
-    }
-    y++;
-  }
-
-  return (y == a_count && y - x > subarray_n) ? (y - x) : subarray_n;
-}
-
-// merge the array
-void merge_array(int *arr, int l, int m, int r)
-{
-  int i, j, k;
-  int n1 = m - l + 1;
-  int n2 = r - m;
-
-  int L[n1], R[n2];
-
-  for (i = 0; i < n1; i++)
-    L[i] = arr[l + i];
-  for (j = 0; j < n2; j++)
-    R[j] = arr[m + 1 + j];
-
-  i = 0;
-  j = 0;
-  k = l;
-  while (i < n1 && j < n2)
-  {
-    if (L[i] <= R[j])
-    {
-      arr[k] = L[i];
-      i++;
-    }
-    else
-    {
-      arr[k] = R[j];
-      j++;
-    }
-    k++;
-  }
-
-  while (i < n1)
-  {
-    arr[k] = L[i];
-    i++;
-    k++;
-  }
-  while (j < n2)
-  {
-    arr[k] = R[j];
-    j++;
-    k++;
-  }
-}
-
-// mergesort algorithm
-void merge_sort_array(int *arr, int l, int r)
-{
-  if (l < r)
-  {
-    int m = l + (r - l) / 2;
-    merge_sort_array(arr, l, m);     // divide
-    merge_sort_array(arr, m + 1, r); // divide
-    merge_array(arr, l, m, r);       // conquer
-  }
+  // if height of tower is 1 and the number of tower is even, then player 2 wins
+  // else player 1 wins
+  return (m == 1 || n % 2 == 0) ? 2 : 1;
 }
 
 int main()
 {
   FILE *fptr = fopen(getenv("OUTPUT_PATH"), "w");
 
-  int n = parse_int(ltrim(rtrim(readline())));
+  int t = parse_int(ltrim(rtrim(readline())));
 
-  char **a_temp = split_string(rtrim(readline()));
-
-  int *a = malloc(n * sizeof(int));
-
-  for (int i = 0; i < n; i++)
+  for (int t_itr = 0; t_itr < t; t_itr++)
   {
-    int a_item = parse_int(*(a_temp + i));
+    char **first_multiple_input = split_string(rtrim(readline()));
 
-    *(a + i) = a_item;
+    int n = parse_int(*(first_multiple_input + 0));
+
+    int m = parse_int(*(first_multiple_input + 1));
+
+    int result = towerBreakers(n, m);
+
+    fprintf(fptr, "%d\n", result);
   }
-
-  int result = pickingNumbers(n, a);
-
-  fprintf(fptr, "%d\n", result);
 
   fclose(fptr);
 

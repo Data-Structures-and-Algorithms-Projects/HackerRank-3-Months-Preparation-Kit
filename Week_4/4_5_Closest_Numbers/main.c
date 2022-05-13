@@ -16,39 +16,12 @@ char **split_string(char *);
 
 int parse_int(char *);
 
-void merge_sort_array(int *arr, int l, int r);
-void merge_array(int *arr, int l, int m, int r);
-
 /*
- * Complete the 'pickingNumbers' function below.
+ * Complete the 'closestNumbers' function below.
  *
- * The function is expected to return an INTEGER.
- * The function accepts INTEGER_ARRAY a as parameter.
+ * The function is expected to return an INTEGER_ARRAY.
+ * The function accepts INTEGER_ARRAY arr as parameter.
  */
-
-int pickingNumbers(int a_count, int *a)
-{
-  int subarray_n = 0;
-  int x = 0;
-  int y = x + 1;
-
-  merge_sort_array(a, 0, a_count - 1);
-
-  for (int i = 0; i < a_count - 1; i++)
-  {
-    if (a[y] - a[x] > 1)
-    {
-      if (y - x > subarray_n)
-      {
-        subarray_n = y - x;
-      }
-      x = y;
-    }
-    y++;
-  }
-
-  return (y == a_count && y - x > subarray_n) ? (y - x) : subarray_n;
-}
 
 // merge the array
 void merge_array(int *arr, int l, int m, int r)
@@ -108,28 +81,137 @@ void merge_sort_array(int *arr, int l, int r)
   }
 }
 
+/*
+ * To return the integer array from the function, you should:
+ *     - Store the size of the array to be returned in the result_count variable
+ *     - Allocate the array statically or dynamically
+ *
+ * For example,
+ * int* return_integer_array_using_static_allocation(int* result_count) {
+ *     *result_count = 5;
+ *
+ *     static int a[5] = {1, 2, 3, 4, 5};
+ *
+ *     return a;
+ * }
+ *
+ * int* return_integer_array_using_dynamic_allocation(int* result_count) {
+ *     *result_count = 5;
+ *
+ *     int *a = malloc(5 * sizeof(int));
+ *
+ *     for (int i = 0; i < 5; i++) {
+ *         *(a + i) = i + 1;
+ *     }
+ *
+ *     return a;
+ * }
+ *
+ */
+
+// BUT THIS CODE DOES NOT RUN IN HACKERRANK'S COMPILER
+// FOR ANY ARRAY OVER 10,000
+// IT SHOWS COMPILER ERROR
+int *closestNumbers(int arr_count, int *arr, int *result_count)
+{
+
+  int *final_arr = NULL;
+  int count = 0;
+  int min_diff = abs(arr[1] - arr[0]);
+
+  // sorting the array first
+  // using merge sort
+  merge_sort_array(arr, 0, arr_count - 1);
+
+  for (int i = 2; i < arr_count; i++)
+    if (arr[i] - arr[i - 1] < min_diff)
+      min_diff = arr[i] - arr[i - 1];
+
+  for (int i = 1; i < arr_count; i++)
+    if (arr[i] - arr[i - 1] == min_diff)
+    {
+      // printf("%d %d ",arr[i-1],arr[i]);
+      if (count == 0)
+      {
+        final_arr = (int *)malloc(sizeof(int) * 2);
+        final_arr[0] = arr[i - 1];
+        final_arr[1] = arr[i];
+        count = 2;
+      }
+      else
+      {
+        final_arr = (int *)realloc(final_arr, count + 2);
+        final_arr[count] = arr[i - 1];
+        final_arr[count + 1] = arr[i];
+        count += 2;
+      }
+    }
+
+  // for(int i = 2; i < arr_count; i++){
+  //     int diff = abs(arr[i] - arr[i - 1]);
+  //     if( diff < min_diff){
+  //         if(count!=2){
+  //             free(final_arr);
+  //             count = 2;
+  //             final_arr = (int*)malloc(sizeof(int)*count);
+  //         }
+  //         min_diff = diff;
+  //         final_arr[0] = arr[i-1];
+  //         final_arr[1] = arr[i];
+  //     }else if(diff == min_diff){
+  //         final_arr = (int*)realloc((void*)final_arr, count+2);
+  //         final_arr[count] = arr[i-1];
+  //         final_arr[count+1] = arr[i];
+  //         count += 2;
+  //     }
+  // }
+
+  // printf("here\n");
+
+  *result_count = count;
+  // for(int i =0; i< *result_count; i++){
+  //     printf("%d ", final_arr[i]);
+  // }
+  //     printf("\n");
+
+  return final_arr;
+}
+
 int main()
 {
   FILE *fptr = fopen(getenv("OUTPUT_PATH"), "w");
 
   int n = parse_int(ltrim(rtrim(readline())));
 
-  char **a_temp = split_string(rtrim(readline()));
+  char **arr_temp = split_string(rtrim(readline()));
 
-  int *a = malloc(n * sizeof(int));
+  int *arr = malloc(n * sizeof(int));
 
   for (int i = 0; i < n; i++)
   {
-    int a_item = parse_int(*(a_temp + i));
+    int arr_item = parse_int(*(arr_temp + i));
 
-    *(a + i) = a_item;
+    *(arr + i) = arr_item;
   }
 
-  int result = pickingNumbers(n, a);
+  int result_count;
+  int *result = closestNumbers(n, arr, &result_count);
 
-  fprintf(fptr, "%d\n", result);
+  for (int i = 0; i < result_count; i++)
+  {
+    fprintf(fptr, "%d", *(result + i));
+
+    if (i != result_count - 1)
+    {
+      fprintf(fptr, " ");
+    }
+  }
+
+  fprintf(fptr, "\n");
 
   fclose(fptr);
+
+  free(result);
 
   return 0;
 }

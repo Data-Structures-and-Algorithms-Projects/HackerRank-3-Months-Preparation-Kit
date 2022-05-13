@@ -16,118 +16,65 @@ char **split_string(char *);
 
 int parse_int(char *);
 
-void merge_sort_array(int *arr, int l, int r);
-void merge_array(int *arr, int l, int m, int r);
-
 /*
- * Complete the 'pickingNumbers' function below.
+ * Complete the 'kangaroo' function below.
  *
- * The function is expected to return an INTEGER.
- * The function accepts INTEGER_ARRAY a as parameter.
+ * The function is expected to return a STRING.
+ * The function accepts following parameters:
+ *  1. INTEGER x1
+ *  2. INTEGER v1
+ *  3. INTEGER x2
+ *  4. INTEGER v2
  */
 
-int pickingNumbers(int a_count, int *a)
+/*
+ * To return the string from the function, you should either do static allocation or dynamic allocation
+ *
+ * For example,
+ * char* return_string_using_static_allocation() {
+ *     static char s[] = "static allocation of string";
+ *
+ *     return s;
+ * }
+ *
+ * char* return_string_using_dynamic_allocation() {
+ *     char* s = malloc(100 * sizeof(char));
+ *
+ *     s = "dynamic allocation of string";
+ *
+ *     return s;
+ * }
+ *
+ */
+char *kangaroo(int x1, int v1, int x2, int v2)
 {
-  int subarray_n = 0;
-  int x = 0;
-  int y = x + 1;
+  char *result = (char *)malloc(sizeof(char) * 3);
 
-  merge_sort_array(a, 0, a_count - 1);
+  if (v1 > v2 && (x2 - x1) % (v2 - v1) == 0)
+    result = "YES";
+  else
+    result = "NO";
 
-  for (int i = 0; i < a_count - 1; i++)
-  {
-    if (a[y] - a[x] > 1)
-    {
-      if (y - x > subarray_n)
-      {
-        subarray_n = y - x;
-      }
-      x = y;
-    }
-    y++;
-  }
-
-  return (y == a_count && y - x > subarray_n) ? (y - x) : subarray_n;
-}
-
-// merge the array
-void merge_array(int *arr, int l, int m, int r)
-{
-  int i, j, k;
-  int n1 = m - l + 1;
-  int n2 = r - m;
-
-  int L[n1], R[n2];
-
-  for (i = 0; i < n1; i++)
-    L[i] = arr[l + i];
-  for (j = 0; j < n2; j++)
-    R[j] = arr[m + 1 + j];
-
-  i = 0;
-  j = 0;
-  k = l;
-  while (i < n1 && j < n2)
-  {
-    if (L[i] <= R[j])
-    {
-      arr[k] = L[i];
-      i++;
-    }
-    else
-    {
-      arr[k] = R[j];
-      j++;
-    }
-    k++;
-  }
-
-  while (i < n1)
-  {
-    arr[k] = L[i];
-    i++;
-    k++;
-  }
-  while (j < n2)
-  {
-    arr[k] = R[j];
-    j++;
-    k++;
-  }
-}
-
-// mergesort algorithm
-void merge_sort_array(int *arr, int l, int r)
-{
-  if (l < r)
-  {
-    int m = l + (r - l) / 2;
-    merge_sort_array(arr, l, m);     // divide
-    merge_sort_array(arr, m + 1, r); // divide
-    merge_array(arr, l, m, r);       // conquer
-  }
+  return result;
 }
 
 int main()
 {
   FILE *fptr = fopen(getenv("OUTPUT_PATH"), "w");
 
-  int n = parse_int(ltrim(rtrim(readline())));
+  char **first_multiple_input = split_string(rtrim(readline()));
 
-  char **a_temp = split_string(rtrim(readline()));
+  int x1 = parse_int(*(first_multiple_input + 0));
 
-  int *a = malloc(n * sizeof(int));
+  int v1 = parse_int(*(first_multiple_input + 1));
 
-  for (int i = 0; i < n; i++)
-  {
-    int a_item = parse_int(*(a_temp + i));
+  int x2 = parse_int(*(first_multiple_input + 2));
 
-    *(a + i) = a_item;
-  }
+  int v2 = parse_int(*(first_multiple_input + 3));
 
-  int result = pickingNumbers(n, a);
+  char *result = kangaroo(x1, v1, x2, v2);
 
-  fprintf(fptr, "%d\n", result);
+  fprintf(fptr, "%s\n", result);
 
   fclose(fptr);
 
